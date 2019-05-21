@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/startParty"
+        android:title="Rozpocznij imprezę" />
+
+    <item
+        android:id="@+id/pauseParty"
+        android:title="Zatrzymaj imprezę" />
+
+    <item
+        android:id="@+id/deleteParty"
+        android:title="Usuń imprezę" />
+
+</menu>

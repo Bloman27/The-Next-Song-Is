@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">The Next Song is...</string>
+    <string name="button_start_party">Rozpocznij imprezę</string>
+    <string name="button_join_party">Dołącz do imprezy</string>
+    <string name="join_party">Dołącz do imprezy</string>
+    <string name="title_new_party">Nowa impreza</string>
+    <string name="title_list_parties">Imprezy</string>
+    <string name="title_list_playlists">Playlisty</string>
+    <string name="title_activity_host">Gospodarz</string>
+    <string name="partyNameHint">Podaj nazwę imprezy</string>
+    <string name="loading">Wczytywanie</string>
+    <string name="alreadyVoted">Głos został już oddany</string>
+    <string name="enterCode">Podaj kod imprezy</string>
+    <string name="enterCodeButton">Dołącz</string>
+    <string name="emptyString"></string>
+    <string name="wrongPartyId">Zły id imprezy</string>
+    <string name="connectionProblems">Problemy z siecią</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment0">Hello blank fragment0</string>
+    <string name="hello_blank_fragment1">Hello blank fragment1</string>
+    <string name="hello_blank_fragment2">Hello blank fragment2</string>
+
+    <string name="partyStartedSuccess">Impreza wystartowała!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_guest">GuestActivity</string>
+    <string name="noTitle">Podaj nazwę imprezy</string>
+    <string name="partyOngoing">Impreza trwa. Nie można rozpocząć kolejnej</string>
+    <string name="noPartyOngoing">Aktualnie nie trwa żadna impreza</string>
+    <string name="partyDeleted">Impreza usunięta</string>
+    <string name="partyStopped">Impreza zatrzymana</string>
+
+
+</resources>

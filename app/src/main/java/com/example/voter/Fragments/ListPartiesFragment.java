@@ -25,6 +25,7 @@ import com.example.voter.Firebase;
 import com.example.voter.Models.Party;
 import com.example.voter.PartyService;
 import com.example.voter.R;
+import com.example.voter.Spotify;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -115,7 +116,7 @@ public class ListPartiesFragment extends Fragment {
         });
         registerForContextMenu(listView);
 
-        getParties("polkotoi");
+        getParties(Spotify.getInstance().getUserPrivate().id);
 
         return view;
     }
@@ -154,6 +155,10 @@ public class ListPartiesFragment extends Fragment {
                 deleteParty(parties.get(tempPartyNameForContextMenu).getPartyId());
                 Toast.makeText(getActivity(), R.string.partyDeleted, Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.shareParty:
+                shareParty(parties.get(tempPartyNameForContextMenu).getPartyId(), tempPartyNameForContextMenu);
+                break;
+
         }
 
         return super.onContextItemSelected(item);
@@ -255,6 +260,16 @@ public class ListPartiesFragment extends Fragment {
         FirebaseFirestore db = Firebase.getInstance().getDb();
 
         db.collection("Parties").document(partyId).delete();
+    }
+
+    private void shareParty(String partyId, String partyName){
+        String shareBody = "Hej, zapraszam do wspólnej imprezy!" +
+                "\nDołącz do imprezy wklejając w aplikacji ten kod:\n\n" +  partyId;
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Kod imprezy");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        startActivity(Intent.createChooser(sharingIntent, "Kod imprezy"));
     }
 
     private void loadFragment(Fragment fragment) {

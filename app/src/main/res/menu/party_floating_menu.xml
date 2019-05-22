@@ -13,4 +13,8 @@
         android:id="@+id/deleteParty"
         android:title="Usuń imprezę" />
 
+    <item
+        android:id="@+id/shareParty"
+        android:title="Udostępnij imprezę" />
+
 </menu>

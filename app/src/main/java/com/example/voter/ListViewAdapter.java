@@ -80,8 +80,8 @@ public class ListViewAdapter extends BaseAdapter{
         holder.txtFirst.setText(map.get(FIRST_COLUMN));
         holder.txtSecond.setText(map.get(SECOND_COLUMN));
         if(map.get(COLOR) != null && map.get(COLOR).equals("green")){
-            holder.txtFirst.setTextColor(Color.GREEN);
-            holder.txtSecond.setTextColor(Color.GREEN);
+            //holder.txtFirst.setTextColor(Color.GREEN);
+            //holder.txtSecond.setTextColor(Color.GREEN);
         }
 
         return convertView;

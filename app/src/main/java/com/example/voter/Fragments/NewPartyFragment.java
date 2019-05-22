@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -17,13 +18,25 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.voter.Firebase;
+import com.example.voter.Models.Party;
+import com.example.voter.Models.Song;
 import com.example.voter.PartyService;
 import com.example.voter.R;
 import com.example.voter.Spotify;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import kaaes.spotify.webapi.android.models.Pager;
+import kaaes.spotify.webapi.android.models.PlaylistTrack;
 
 
 /**
@@ -44,6 +57,8 @@ public class NewPartyFragment extends Fragment {
     Button startNewPartyButton;
     Spotify spotify;
     Firebase firebase;
+    String partyId;
+    String partyName;
 
 
     public NewPartyFragment() {
@@ -100,13 +115,10 @@ public class NewPartyFragment extends Fragment {
 
                 } else {
                     spotify.downloadSongs(playlists.get(spinner.getSelectedItem().toString()));
-
+                    partyName = editText.getText().toString();
                     Log.d("NewPartyFragment", spotify.getPlaylistTrackPager().toString());
-                    firebase.createParty(editText.getText().toString(), spotify.getUserPrivate().id, spotify.getPlaylistTrackPager());
-
-                    startService(v);
-                    loadFragment(PartyStartedFragment.newInstance(editText.getText().toString(), spotify.getUserPrivate().id, spotify.getPlaylistTrackPager().items.size()));
-                }
+                    createParty(editText.getText().toString(), spotify.getUserPrivate().id, spotify.getPlaylistTrackPager(), v);
+                   }
             }
         });
 
@@ -153,12 +165,63 @@ public class NewPartyFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    private void startService(View v){
+    private void startService(View v) {
         Intent serviceIntent = new Intent(getContext(), PartyService.class);
-        serviceIntent.putExtra(PartyService.PARTYID, "xdx");
-        serviceIntent.putExtra(PartyService.PARTYNAME, "Bania u cygana");
+        serviceIntent.putExtra(PartyService.PARTYID, partyId);
+        serviceIntent.putExtra(PartyService.PARTYNAME, partyName);
 
         getActivity().startService(serviceIntent);
     }
 
+
+    public void createParty(String name, String host, Pager<PlaylistTrack> playlistTrackPager, View v) {
+
+        FirebaseFirestore db = Firebase.getInstance().getDb();
+
+        db.collection("Parties")
+                .add(new Party(host, true, name))
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+
+                        Log.d("Firebase", "DocumentSnapshot (Party) written with ID: " + documentReference.getId());
+                        WriteBatch batch = db.batch();
+                        partyId = documentReference.getId();
+
+                        for (int i = 0; i < playlistTrackPager.items.size(); i++) {
+
+                            String artists = playlistTrackPager.items.get(i).track.artists.get(0).name;
+                            for (int j = 1; j < playlistTrackPager.items.get(i).track.artists.size(); j++) {
+                                artists += " ";
+                                artists += playlistTrackPager.items.get(i).track.artists.get(j).name;
+                            }
+
+                            Song song = new Song(artists, playlistTrackPager.items.get(i).track.id,
+                                    playlistTrackPager.items.get(i).track.name, 0, false);
+
+                            DocumentReference songRef = documentReference.collection("Songs").document();
+
+                            batch.set(songRef, song);
+                        }
+                        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful())
+                                    Log.d("Firebase", "Batch (Songs) commit successful");
+                                else
+                                    Log.d("Firebase", "Batch (Songs) commit failed");
+                            }
+                        });
+
+                        startService(v);
+                        loadFragment(PartyStartedFragment.newInstance(editText.getText().toString(), spotify.getUserPrivate().id, spotify.getPlaylistTrackPager().items.size()));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("Firebase", "Error writing document", e);
+                    }
+                });
+    }
 }
